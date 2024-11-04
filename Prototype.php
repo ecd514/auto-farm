@@ -16,8 +16,7 @@
     </form>
 
     <?php
-        $pumpstatus = 'pumpstatus.txt';
-        $status = file_get_contents($pumpstatus);
+        $status = file_get_contents('pumpstatus.txt');
 
         if(isset($_POST['status']))
         {
@@ -35,7 +34,7 @@
             }
         }
 
-        file_put_contents($pumpstatus, $status);
+        file_put_contents('pumpstatus.txt', $status);
         
     ?>
 
