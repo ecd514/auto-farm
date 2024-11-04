@@ -2,54 +2,18 @@
 <head>
     <title>ECD514</title>
 
-    <meta http-equiv="refresh" content="5">
+    <!--<meta http-equiv="refresh" content="5">-->
 
 </head>
 
 <body>
     <h1>Current Pump Status</h1>
 
-    <?php
-
-        $pumpstatus = file_get_contents('pumpstatus.txt');
-
-        if ($pumpstatus === 'On')
-        {
-            echo 'Pump is On';
-        }
-        else if ($pumpstatus === 'Off')
-        {
-            echo 'Pump is Off';
-        }
-        else
-        {
-            echo 'Error';
-        }
-
-    ?>
+    <iframe src="pumpstatus.php" width="110" height="35"></iframe>
 
     <h1>Recent Events</h1>
 
-    <?php
-    
-        // import log text file
-        $log = file_get_contents('log.txt');
-    
-        // Split log into array by new line
-        $logarray = explode("\n", $log);
-
-        // most recent ten lines 
-        $mostrecentten = array_slice($logarray, -10);
-        
-        // display each line using foreach
-        foreach ($mostrecentten as $mostrecent)
-        {
-            echo $mostrecent;
-            echo "<br/>";
-        }
-        //comment
-        //comment2
-    ?>
+    <iframe src="log.php" height="210"></iframe>
     
     <a href="log.txt" download>
         <h1>Full Log</h1>
