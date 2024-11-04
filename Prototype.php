@@ -9,7 +9,39 @@
 <body>
     <h1>Current Pump Status</h1>
 
-    <iframe src="pumpstatus.php" width="110" height="35"></iframe>
+    <form method="post">
+        <button type="submit" name="status">
+            Toggle Pump Status
+        </button>
+    </form>
+
+    <?php
+        $pumpstatus = 'pumpstatus.txt';
+        $status = file_get_contents($pumpstatus);
+
+        if(isset($_POST['status']))
+        {
+            if($status === 'On')
+            {
+                $status = 'Off';
+            }
+            elseif($status === 'Off')
+            {
+                $status = 'On';
+            }
+            else
+            {
+                echo 'Error';
+            }
+        }
+
+        file_put_contents($pumpstatus, $status);
+        
+    ?>
+
+    <div>
+        <iframe src="read_pumpstatus.php" width="115" height="35"></iframe>
+    </div>
 
     <h1>Recent Events</h1>
 
