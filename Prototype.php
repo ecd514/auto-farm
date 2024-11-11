@@ -1,3 +1,28 @@
+<?php
+    $status = file_get_contents('pumpstatus.txt');
+
+    if(isset($_POST['status']))
+    {
+        header('Location:Prototype.php');
+
+        if($status === 'On')
+        {
+            $status = 'Off';
+        }
+        elseif($status === 'Off')
+        {
+            $status = 'On';
+        }
+        else
+        {
+            echo 'Error';
+        }
+    }
+
+    file_put_contents('pumpstatus.txt', $status);
+
+?>
+
 <!DOCTYPE html>
 <head>
     <title>ECD514</title>
@@ -15,28 +40,7 @@
         </button>
     </form>
 
-    <?php
-        $status = file_get_contents('pumpstatus.txt');
 
-        if(isset($_POST['status']))
-        {
-            if($status === 'On')
-            {
-                $status = 'Off';
-            }
-            elseif($status === 'Off')
-            {
-                $status = 'On';
-            }
-            else
-            {
-                echo 'Error';
-            }
-        }
-
-        file_put_contents('pumpstatus.txt', $status);
-        
-    ?>
 
     <div>
         <iframe src="read_pumpstatus.php" width="115" height="35"></iframe>
