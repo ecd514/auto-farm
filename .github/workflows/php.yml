@@ -1,19 +1,19 @@
-name: PHP Test
-
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-
-permissions:
-  contents: read
-
-jobs:
-  build:
-
-    runs-on: fedora-latest
-
+#name: PHP Test
+#
+#on:
+#  push:
+#    branches: [ "main" ]
+#  pull_request:
+#    branches: [ "main" ]
+#
+#permissions:
+#  contents: read
+#
+#jobs:
+#  build:
+#
+#    runs-on: fedora-latest
+#
 #    steps:
 #    - uses: actions/checkout@v4
 #
