@@ -1,4 +1,6 @@
 <?php
+    date_default_timezone_set("America/New_York");
+
     $status = file_get_contents('pumpstatus.txt');
 
     if(isset($_POST['status']))
@@ -8,10 +10,16 @@
         if($status === 'On')
         {
             $status = 'Off';
+            $log = fopen("log.txt", "a");
+            fwrite($log, date("m/d/Y h:ia") . " Pump Off\n");
+            fclose($log);
         }
         elseif($status === 'Off')
         {
             $status = 'On';
+            $log = fopen("log.txt", "a");
+            fwrite($log, date("m/d/Y h:ia") . " Pump On\n");
+            fclose($log);
         }
         else
         {
