@@ -18,3 +18,14 @@
     }
 
 ?>
+
+<!DOCTYPE html>
+<head>
+<style>
+    body {
+        font-family: "Arial", sans-serif;
+        text-align: center;
+    }
+</style>
+</head>
+</html>

@@ -1,13 +1,11 @@
-11/18/2024 03:08pm Pump Off
-11/18/2024 03:08pm Pump On
-11/18/2024 03:08pm Pump Off
-11/18/2024 03:08pm Pump On
-11/18/2024 03:08pm Pump Off
-11/18/2024 03:08pm Pump On
-11/18/2024 03:08pm Pump Off
-11/18/2024 03:08pm Pump On
-11/18/2024 03:08pm Pump Off
-11/18/2024 03:08pm Pump On
-11/18/2024 03:11pm Pump Off
-11/18/2024 03:11pm Pump On
-11/18/2024 03:11pm Pump Off
+02/05/2025,03:99pm,Pump On,
+02/05/2025,03:34pm,Pump Off,
+02/05/2025,03:34pm,Pump On,
+02/05/2025,03:35pm,Pump Off,
+02/05/2025,03:35pm,Pump On,
+02/05/2025,03:35pm,Pump Off,
+02/05/2025,03:35pm,Pump On,
+02/05/2025,03:35pm,Pump Off,
+02/05/2025,03:35pm,Pump On,
+02/05/2025,03:35pm,Pump Off,
+02/05/2025,03:99pm,Pump On,
