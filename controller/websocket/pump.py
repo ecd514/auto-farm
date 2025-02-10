@@ -30,7 +30,8 @@ def update_status():
 
     new_status = data['status']
     if new_status not in ('on', 'off'):
-        return jsonify({'error': 'Invalid status. Must be "on" or "off".'}), 400
+        return jsonify({'error': 'Invalid status. Must be "on" or "off".'}),
+        400
 
     db = get_db()
     cursor = db.cursor()

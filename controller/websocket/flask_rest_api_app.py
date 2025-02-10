@@ -2,6 +2,7 @@
 from flask import Flask, g
 from .db import init_db, get_db
 from .pump import pump_bp
+from .weather import weather_bp
 
 
 def start_api():
@@ -9,6 +10,7 @@ def start_api():
 
     # Register API blueprints.
     app.register_blueprint(pump_bp)
+    app.register_blueprint(weather_bp)
 
     # Ensure that the database connection is closed after each request.
     @app.teardown_appcontext
