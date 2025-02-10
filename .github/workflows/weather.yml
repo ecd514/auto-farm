@@ -13,20 +13,20 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@main
-      name: install python packages
+      #    - uses: actions/checkout@main
+    - name: install python packages
       run: pip install flask gunicorn
 
-    - uses: actions/checkout@main
-      name: Install php and curl
+      #- uses: actions/checkout@main
+    - name: Install php and curl
       run:  apt install php php-cli curl
 
-    - uses: actions/checkout@main
-      name: Start python and php server
+      #- uses: actions/checkout@main
+    - name: Start python and php server
       run:  python3 kickstart.py
 
-    - uses: actions/checkout@main
-      name: Check API url locations
+      #- uses: actions/checkout@main
+    - name: Check API url locations
       run: |
           curl -X GET http://localhost:5000/api/pump/status
 
