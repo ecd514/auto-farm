@@ -468,3 +468,4 @@ FodyWeavers.xsd
 
 # Custom file types
 *.db
+./webinterface/log.txt
