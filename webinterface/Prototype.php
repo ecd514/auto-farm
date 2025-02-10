@@ -1,15 +1,18 @@
 <?php
     date_default_timezone_set("America/New_York");
 
-    $status = file_get_contents('pumpstatus.txt');
-
+    $status_raw = file_get_contents('http://localhost:5000/api/pump/status');
+    // http://localhost:5000/api/pump/status
+    $status = json_decode($status_raw);
+    $status = $status->status;
+    echo $status;
     if(isset($_POST['status']))
     {
         header('Location:Prototype.php');
 
-        if($status === 'On')
+        if($status === 'on')
         {
-            $status = 'Off';
+            $status = 'off';
             $log = fopen("log.txt", "a");
 
             // if statement to check if file is empty
@@ -22,9 +25,9 @@
             }
             fclose($log);
         }
-        elseif($status === 'Off')
+        elseif($status === 'off')
         {
-            $status = 'On';
+            $status = 'on';
             $log = fopen("log.txt", "a");
             if (filesize('log.txt') == 0) {
                 fwrite($log, date("m/d/Y,h:ia,") . "Pump On,");
@@ -36,7 +39,7 @@
         }
         else
         {
-            echo 'Error';
+            echo $status;
         }
     }
 

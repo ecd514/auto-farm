@@ -33,7 +33,10 @@
         width: 100%;
     }
     td {
+        background-color: silver;
         border: 1px solid;
+    }
+    th {
     }
 </style>
 </head>

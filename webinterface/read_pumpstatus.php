@@ -2,13 +2,15 @@
 
     echo '<meta http-equiv="refresh" content="5">';
 
-    $pumpstatus = file_get_contents('pumpstatus.txt');
+    $pumpstatus_raw = file_get_contents('http://localhost:5000/api/pump/status');
+    $pumpstatus = json_decode($pumpstatus_raw);
+    $pumpstatus = $pumpstatus->status;
 
-    if ($pumpstatus === 'On')
+    if ($pumpstatus === 'on')
     {
         echo 'Pump is On';
     }
-    else if ($pumpstatus === 'Off')
+    else if ($pumpstatus === 'off')
     {
         echo 'Pump is Off';
     }
