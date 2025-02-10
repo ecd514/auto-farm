@@ -1,33 +1,59 @@
 <?php
     date_default_timezone_set("America/New_York");
 
-    $status_raw = file_get_contents('http://localhost:5000/api/pump/status');
-    // http://localhost:5000/api/pump/status
+    $pumpurl = "http://localhost:5000/api/pump/status";
+
+    $status_raw = file_get_contents($pumpurl);
     $status = json_decode($status_raw);
     $status = $status->status;
-    echo $status;
+
+    //$data = [status=>]
+
     if(isset($_POST['status']))
     {
         header('Location:Prototype.php');
 
         if($status === 'on')
         {
-            $status = 'off';
-            $log = fopen("log.txt", "a");
+            $options = [
+                "http" => [
+                    "header" => "Content-Type: application/json\r\n" .
+                                "Accept: application/json\r\n",
+                    "method"  => "POST",
+                    "content" => json_encode(["status"=>"off"])
+                ]
+            ];
+            
+            $context = stream_context_create($options);
+            $response = file_get_contents($pumpurl, false, $context);
+            
+            echo "Response: " . $response;
 
-            // if statement to check if file is empty
-            // if it is, the first newline is not added
+            $log = fopen("log.txt", "a");
             if (filesize('log.txt') == 0) {
                 fwrite($log, date("m/d/Y,h:ia,") . "Pump Off,");
             }
             else {
-            fwrite($log, date("\nm/d/Y,h:ia,") . "Pump Off,");
+                fwrite($log, date("\nm/d/Y,h:ia,") . "Pump Off,");
             }
             fclose($log);
         }
         elseif($status === 'off')
-        {
-            $status = 'on';
+        {            
+            $options = [
+                "http" => [
+                    "header" => "Content-Type: application/json\r\n" .
+                                "Accept: application/json\r\n",
+                    "method"  => "POST",
+                    "content" => json_encode(["status"=>"on"])
+                ]
+            ];
+            
+            $context = stream_context_create($options);
+            $response = file_get_contents($pumpurl, false, $context);
+            
+            echo "Response: " . $response;
+
             $log = fopen("log.txt", "a");
             if (filesize('log.txt') == 0) {
                 fwrite($log, date("m/d/Y,h:ia,") . "Pump On,");
@@ -36,6 +62,7 @@
                 fwrite($log, date("\nm/d/Y,h:ia,") . "Pump On,");
             }
             fclose($log);
+
         }
         else
         {
