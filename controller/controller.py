@@ -5,8 +5,7 @@ import time
 from websocket.flask_rest_api_app import start_api
 from websocket.db import is_database_initialized
 
-# def main():
-
+database_tables = ['pump_status', 'weather_data']
 
 api_app = start_api()
 
@@ -22,10 +21,15 @@ flask_thread.start()
 
 
 if __name__ == "__main__":
-    while not is_database_initialized('pump_status'):
-        print("Pump database not initialized yet")
-        time.sleep(5)
-    print('Pump database accessible')
-    while True:
-        #        print("Main controller is running other operations...")
-        time.sleep(5)  # Simulate ongoing operations
+
+    for table_being_verified in database_tables:
+        while not is_database_initialized(table_being_verified):
+            print("Required table {} not found".format(table_being_verified))
+            time.sleep(5)
+        print('Table {} is accessible'.format(table_being_verified))
+    try:
+        # Keep the script running to keep the servers alive
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        print("Shutting down servers...")

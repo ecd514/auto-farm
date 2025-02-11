@@ -64,7 +64,7 @@ def is_database_initialized(table_to_check: str):
 
         # Check if the table "weather_data" exists
         cursor.execute(
-            "SELECT name FROM sqlite_master WHERE type='table' AND name="+table_to_check)
+            "SELECT name FROM sqlite_master WHERE type='table' AND name='{}'".format(table_to_check))
         table_exists = cursor.fetchone() is not None
 
         conn.close()
