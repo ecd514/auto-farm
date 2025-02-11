@@ -1,4 +1,4 @@
-name: Weather API Test
+name: Build and Test Server API URLs
 
 on:
   push:
@@ -7,16 +7,27 @@ on:
     branches: [ "main" ]
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v4
+      #    - uses: actions/checkout@main
+    - name: install python packages
+      run: pip install flask gunicorn
 
-    - name: Test Python Weather API call
-      run: python3 ./controller/weather-api.py
+      #- uses: actions/checkout@main
+    - name: Install php and curl
+      run:  apt install php php-cli curl
+
+      #- uses: actions/checkout@main
+    - name: Start python and php server
+      run:  python3 kickstart.py
+
+      #- uses: actions/checkout@main
+    - name: Check API url locations
+      run: |
+          curl -X GET http://localhost:5000/api/pump/status
+
 
