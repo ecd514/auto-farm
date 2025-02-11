@@ -113,6 +113,12 @@
         <iframe src="read_pumpstatus.php" width="200" height="35"></iframe>
     </div>
 
+    <div>
+        <a href="http://rpi-farm.netbird.cloud/grafana/">
+            <img src="icons8-grafana-48.png" width="100" height="100">
+        </a>
+    </div>
+
     <h1>Recent Events</h1>
 
     <iframe src="log.php" height="225"></iframe>
@@ -120,6 +126,8 @@
     <a href="log.txt" download>
         <h1>Full Log</h1>
     </a>
+
+    <iframe src="https://forecast.weather.gov/MapClick.php?lat=42.1242647&lon=-75.9280673#current-conditions" height="225" width="1000"></iframe>
 
 </body>
 
