@@ -1,21 +1,72 @@
 <?php
-    $status = file_get_contents('pumpstatus.txt');
+    date_default_timezone_set("America/New_York");
+
+    $pumpurl = "http://localhost:5000/api/pump/status";
+
+    $status_raw = file_get_contents($pumpurl);
+    $status = json_decode($status_raw);
+    $status = $status->status;
+
+    //$data = [status=>]
 
     if(isset($_POST['status']))
     {
         header('Location:Prototype.php');
 
-        if($status === 'On')
+        if($status === 'on')
         {
-            $status = 'Off';
+            $options = [
+                "http" => [
+                    "header" => "Content-Type: application/json\r\n" .
+                                "Accept: application/json\r\n",
+                    "method"  => "POST",
+                    "content" => json_encode(["status"=>"off"])
+                ]
+            ];
+            
+            $context = stream_context_create($options);
+            $response = file_get_contents($pumpurl, false, $context);
+            
+            echo "Response: " . $response;
+
+            $log = fopen("log.txt", "a");
+            if (filesize('log.txt') == 0) {
+                fwrite($log, date("m/d/Y,h:ia,") . "Pump Off,");
+            }
+            else {
+                fwrite($log, date("\nm/d/Y,h:ia,") . "Pump Off,");
+            }
+            fclose($log);
         }
-        elseif($status === 'Off')
-        {
-            $status = 'On';
+        elseif($status === 'off')
+        {            
+            $options = [
+                "http" => [
+                    "header" => "Content-Type: application/json\r\n" .
+                                "Accept: application/json\r\n",
+                    "method"  => "POST",
+                    "content" => json_encode(["status"=>"on"])
+                ]
+            ];
+            
+            $context = stream_context_create($options);
+            $response = file_get_contents($pumpurl, false, $context);
+            
+            echo "Response: " . $response;
+
+            $log = fopen("log.txt", "a");
+            if (filesize('log.txt') == 0) {
+                fwrite($log, date("m/d/Y,h:ia,") . "Pump On,");
+            }
+            else {
+                fwrite($log, date("\nm/d/Y,h:ia,") . "Pump On,");
+            }
+            fclose($log);
+
         }
         else
         {
-            echo 'Error';
+            echo $status;
         }
     }
 
@@ -25,9 +76,27 @@
 
 <!DOCTYPE html>
 <head>
-    <title>ECD514</title>
+    <style>
+        body {
+            background-color: whitesmoke;
+        }
+        
+        h1 {
+            color: black;
+            font-family: "Arial", sans-serif;
+        }
 
-    <!--<meta http-equiv="refresh" content="5">-->
+        iframe {
+            background-color: lightgrey;
+            border-radius: 25px;
+        }
+
+        button {
+            border-radius: 25px;
+        }
+    </style>
+    
+    <title>ECD514</title>
 
 </head>
 
@@ -40,19 +109,25 @@
         </button>
     </form>
 
-
+    <div>
+        <iframe src="read_pumpstatus.php" width="200" height="35"></iframe>
+    </div>
 
     <div>
-        <iframe src="read_pumpstatus.php" width="115" height="35"></iframe>
+        <a href="http://rpi-farm.netbird.cloud/grafana/">
+            <img src="icons8-grafana-48.png" width="100" height="100">
+        </a>
     </div>
 
     <h1>Recent Events</h1>
 
-    <iframe src="log.php" height="210"></iframe>
+    <iframe src="log.php" height="225"></iframe>
     
     <a href="log.txt" download>
         <h1>Full Log</h1>
     </a>
+
+    <iframe src="https://forecast.weather.gov/MapClick.php?lat=42.1242647&lon=-75.9280673#current-conditions" height="225" width="1000"></iframe>
 
 </body>
 
