@@ -469,3 +469,4 @@ FodyWeavers.xsd
 # Custom file types
 *.db
 *.txt
+webinterface/pumpstatus.txt

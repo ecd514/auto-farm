@@ -10,8 +10,8 @@
             "args": [
                 "-S",
                 "localhost:8000",
-                "-t",
-                "webinterface"
+                //"-t",
+                //"webinterface"
             ],
             "group": {
                 "kind": "build",
