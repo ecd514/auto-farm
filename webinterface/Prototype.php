@@ -7,8 +7,6 @@
     $status = json_decode($status_raw);
     $status = $status->status;
 
-    //$data = [status=>]
-
     if(isset($_POST['status']))
     {
         header('Location:Prototype.php');
@@ -17,8 +15,7 @@
         {
             $options = [
                 "http" => [
-                    "header" => "Content-Type: application/json\r\n" .
-                                "Accept: application/json\r\n",
+                    "header" => "Content-Type: application/json\r\n" . "Accept: application/json\r\n",
                     "method"  => "POST",
                     "content" => json_encode(["status"=>"off"])
                 ]
@@ -42,8 +39,7 @@
         {            
             $options = [
                 "http" => [
-                    "header" => "Content-Type: application/json\r\n" .
-                                "Accept: application/json\r\n",
+                    "header" => "Content-Type: application/json\r\n" . "Accept: application/json\r\n",
                     "method"  => "POST",
                     "content" => json_encode(["status"=>"on"])
                 ]
@@ -94,6 +90,15 @@
         button {
             border-radius: 25px;
         }
+
+        .top-right {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
     </style>
     
     <title>ECD514</title>
@@ -113,9 +118,13 @@
         <iframe src="read_pumpstatus.php" width="200" height="35"></iframe>
     </div>
 
-    <div>
+    <div class="top-right">
         <a href="http://rpi-farm.netbird.cloud/grafana/">
-            <img src="icons8-grafana-48.png" width="100" height="100">
+            <img src="icons8-grafana-48.png" width="50" height="50">
+        </a>
+
+        <a href="http://rpi-farm.netbird.cloud/prometheus/">
+            <img src="icons8-prometheus-48.png" width="50" height="50">
         </a>
     </div>
 
