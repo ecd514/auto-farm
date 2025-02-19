@@ -65,9 +65,6 @@
             echo $status;
         }
     }
-
-    file_put_contents('pumpstatus.txt', $status);
-
 ?>
 
 <!DOCTYPE html>
@@ -92,12 +89,18 @@
         }
 
         .top-right {
-            position: fixed;
+            position: absolute;
             top: 10px;
             right: 10px;
             display: flex;
             align-items: center;
             gap: 10px;
+        }
+
+        .middle-right {
+            position: fixed;
+            top: 1000px;
+            right: 10px;
         }
     </style>
     
@@ -135,9 +138,10 @@
     <a href="log.txt" download>
         <h1>Full Log</h1>
     </a>
-
-    <iframe src="https://forecast.weather.gov/MapClick.php?lat=42.1242647&lon=-75.9280673#current-conditions" height="225" width="1000"></iframe>
-
+    
+    <div class="middle-right">
+        <iframe src="https://forecast.weather.gov/MapClick.php?lat=42.1242647&lon=-75.9280673#current-conditions" height="225" width="1000"></iframe>
+    </div>
 </body>
 
 </html>
