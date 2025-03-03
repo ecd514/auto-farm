@@ -7,8 +7,6 @@
     $status = json_decode($status_raw);
     $status = $status->status;
 
-    //$data = [status=>]
-
     if(isset($_POST['status']))
     {
         header('Location:Prototype.php');
@@ -17,8 +15,7 @@
         {
             $options = [
                 "http" => [
-                    "header" => "Content-Type: application/json\r\n" .
-                                "Accept: application/json\r\n",
+                    "header" => "Content-Type: application/json\r\n" . "Accept: application/json\r\n",
                     "method"  => "POST",
                     "content" => json_encode(["status"=>"off"])
                 ]
@@ -42,8 +39,7 @@
         {            
             $options = [
                 "http" => [
-                    "header" => "Content-Type: application/json\r\n" .
-                                "Accept: application/json\r\n",
+                    "header" => "Content-Type: application/json\r\n" . "Accept: application/json\r\n",
                     "method"  => "POST",
                     "content" => json_encode(["status"=>"on"])
                 ]
@@ -69,9 +65,6 @@
             echo $status;
         }
     }
-
-    file_put_contents('pumpstatus.txt', $status);
-
 ?>
 
 <!DOCTYPE html>
@@ -94,6 +87,21 @@
         button {
             border-radius: 25px;
         }
+
+        .top-right {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .middle-right {
+            position: fixed;
+            top: 1000px;
+            right: 10px;
+        }
     </style>
     
     <title>ECD514</title>
@@ -113,9 +121,13 @@
         <iframe src="read_pumpstatus.php" width="200" height="35"></iframe>
     </div>
 
-    <div>
+    <div class="top-right">
         <a href="http://rpi-farm.netbird.cloud/grafana/">
-            <img src="icons8-grafana-48.png" width="100" height="100">
+            <img src="icons8-grafana-48.png" width="50" height="50">
+        </a>
+
+        <a href="http://rpi-farm.netbird.cloud/prometheus/">
+            <img src="icons8-prometheus-48.png" width="50" height="50">
         </a>
     </div>
 
@@ -126,9 +138,10 @@
     <a href="log.txt" download>
         <h1>Full Log</h1>
     </a>
-
-    <iframe src="https://forecast.weather.gov/MapClick.php?lat=42.1242647&lon=-75.9280673#current-conditions" height="225" width="1000"></iframe>
-
+    
+    <div class="middle-right">
+        <iframe src="https://forecast.weather.gov/MapClick.php?lat=42.1242647&lon=-75.9280673#current-conditions" height="225" width="1000"></iframe>
+    </div>
 </body>
 
 </html>

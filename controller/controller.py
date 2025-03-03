@@ -1,9 +1,9 @@
 from threading import Thread
 import time
 
-# from weatherapi import weatherfuncs
-from websocket.flask_rest_api_app import start_api
-from websocket.db import is_database_initialized
+from api.weather import reqweather, weather_forecast_data
+from api.flask_rest_api_app import start_api
+from api.db import is_database_initialized
 
 database_tables = ['pump_status', 'weather_data']
 
@@ -27,6 +27,9 @@ if __name__ == "__main__":
             print("Required table {} not found".format(table_being_verified))
             time.sleep(5)
         print('Table {} is accessible'.format(table_being_verified))
+
+    my_weather_data: weather_forecast_data = reqweather()
+    print(my_weather_data.getData())
     try:
         # Keep the script running to keep the servers alive
         while True:
