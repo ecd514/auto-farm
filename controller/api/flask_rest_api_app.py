@@ -1,8 +1,9 @@
 # websocket/flask.py
 from flask import Flask, g
 from .db import init_db, get_db
-from .pump import pump_bp
-from .weather import weather_bp
+from .blueprints import pump_bp, weather_bp
+# from .pump import pump_bp
+# from .weather import weather_bp
 
 
 def start_api():

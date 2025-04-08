@@ -29,9 +29,10 @@ if __name__ == "__main__":
             time.sleep(5)
         print('Table {} is accessible'.format(table_being_verified))
 
-    my_weather_data: weather_forecast_data = reqweather()
+    temp_weather = reqweather()
+    type1 = [type(k) for k in temp_weather.keys()]
+    print(type1)
 
-    print(my_weather_data.getData())
     try:
         # Keep the script running to keep the servers alive
         while True:
