@@ -18,6 +18,7 @@
 <style>
     body {
         font-family: "Arial", sans-serif;
+        font-size: 24px;
         text-align: center;
     }
     table {        
@@ -28,8 +29,10 @@
     td {
         background-color: silver;
         border: 1px solid;
+        font-size: 20px;
     }
     th {
+        font-size: 20px;
     }
 </style>
 </head>
