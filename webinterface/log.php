@@ -8,16 +8,9 @@
     // Split log into array by new line
     $logarray = explode("\n", $log);
 
-    // most recent thirty lines 
+    // most recent ten lines 
     // ten dates, times, and events
-    $mostrecentthirty = array_slice($logarray, -30);
-
-    // display each line using foreach
-    /*foreach ($mostrecentten as $mostrecent)
-    {
-        echo $mostrecent;
-        echo "<br/>";
-    }*/
+    $mostrecentten = array_slice($logarray, -10);
 ?>
 
 <!DOCTYPE html>
@@ -49,7 +42,7 @@
         </tr>
         <?php
             // using php to fill the table
-            foreach ($mostrecentthirty as $mostrecent) {
+            foreach ($mostrecentten as $mostrecent) {
                 // split each row of date into three columns
                 $element = explode(",", $mostrecent);
                 
