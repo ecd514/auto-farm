@@ -5,6 +5,7 @@ from api.weather import reqweather, weather_forecast_data
 from api.flask_rest_api_app import start_api
 from api.db import is_database_initialized
 
+
 database_tables = ['pump_status', 'weather_data']
 
 api_app = start_api()
@@ -28,8 +29,10 @@ if __name__ == "__main__":
             time.sleep(5)
         print('Table {} is accessible'.format(table_being_verified))
 
-    my_weather_data: weather_forecast_data = reqweather()
-    print(my_weather_data.getData())
+    temp_weather = reqweather()
+    type1 = [type(k) for k in temp_weather.keys()]
+    print(type1)
+
     try:
         # Keep the script running to keep the servers alive
         while True:
