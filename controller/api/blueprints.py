@@ -2,6 +2,7 @@
 from flask import Blueprint, jsonify, request
 from .db import get_db
 from .weather import reqweather, weather_forecast_data
+from hardware import turnPumpOn, turnPumpOff, turnLightOn, turnLightOff
 
 pump_bp = Blueprint('pump', __name__, url_prefix='/api/pump')
 weather_bp = Blueprint('weather', __name__, url_prefix='/api/weather')
@@ -37,10 +38,23 @@ def update_status():
 
     db = get_db()
     cursor = db.cursor()
-    cursor.execute(
-        "UPDATE pump_status SET status = ? WHERE id = 1", (new_status,))
-    db.commit()
-    print(new_status)
+    try:
+        cursor.execute(
+            "UPDATE pump_status SET status = ? WHERE id = 1", (new_status,))
+        db.commit()
+        if new_status == 'on':
+            turnPumpOn()
+        elif new_status == 'off':
+            turnLightOff()
+        else:
+            turnLightOn()
+            print("Error: unknown status")
+
+    except Exception as PumpFailure:
+        print("Error: Failed to update/activate pump.")
+        db.rollback()
+        turnPumpOff()
+
     return jsonify({'status': new_status}), 200
 
 
