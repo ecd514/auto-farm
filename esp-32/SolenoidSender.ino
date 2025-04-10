@@ -38,6 +38,18 @@ struct_message board2;
 // Create an array with the three structures
 struct_message boardsStruct[2] = {board1, board2};
 
+void handleSolenoidOn() {
+  digitalWrite(LED_BUILTIN, LOW);  // Turn ON (ESP's LED is active-low)
+  open = 1;
+  server.send(200, "text/plain", "Solenoid ON");
+}
+
+void handleSolenoidOff() {
+  digitalWrite(LED_BUILTIN, HIGH); // Turn OFF
+  open = 0;
+  server.send(200, "text/plain", "Solenoid OFF");
+}
+
 // Callback function that will be executed when data is received
 void OnDataRecv(uint8_t * mac_addr, uint8_t *incomingData, uint8_t len) {
   char macStr[18];
@@ -65,6 +77,14 @@ void handleRoot() {
   htmlContent += "setTimeout(function(){ location.reload(); }, 5000);";  // Refresh every 5 seconds
   htmlContent += "</script>";
   htmlContent += "</head><body>";
+  if (open == 0)
+  {
+    htmlContent += "<p>*Solenoid Valve Closed*</p>";
+  }
+  if (open == 1)
+  {
+    htmlContent += "<p>*Solenoid Valve Open*</p>";
+  }
   htmlContent += "<h1>Sensor 1 Data</h1>";
   htmlContent += "<p>Temperature: " + String(boardsStruct[0].tem, 2) + " &degC</p>";
   htmlContent += "<p>Humidity: " + String(boardsStruct[0].hum, 2) + " %</p>";
@@ -73,6 +93,7 @@ void handleRoot() {
   htmlContent += "<p>Temperature: " + String(boardsStruct[1].tem, 2) + " &degC</p>";
   htmlContent += "<p>Humidity: " + String(boardsStruct[1].hum, 2) + " %</p>";
   htmlContent += "<p>pH: " + String(boardsStruct[1].ph, 2) + " </p>";
+  
   
   // Send the response
   server.send(200, "text/html", htmlContent);
@@ -128,7 +149,6 @@ void loop() {
 
   server.handleClient();
   delay(2000);
-  open = random(0, 2);
 
   // Send message via ESP-NOW
   esp_now_send(0, (uint8_t *) &open, sizeof(open));
