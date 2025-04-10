@@ -139,8 +139,8 @@
         <h1>Full Log</h1>
     </a>
     
-    <div class="middle-right">
-        <iframe src="https://forecast.weather.gov/MapClick.php?lat=42.1242647&lon=-75.9280673#current-conditions" height="225" width="1000"></iframe>
+    <div>
+        <iframe src="read_weather.php" height="225" width="1000"></iframe>
     </div>
 </body>
 
