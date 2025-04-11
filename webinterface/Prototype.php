@@ -1,7 +1,8 @@
 <?php
+    ob_start();
     date_default_timezone_set("America/New_York");
 
-    $pumpurl = "http://localhost:5000/api/pump/status";
+    $pumpurl = "http://127.0.0.1:5000/api/pump/status";
 
     $status_raw = file_get_contents($pumpurl);
     $status = json_decode($status_raw);
@@ -9,8 +10,6 @@
 
     if(isset($_POST['status']))
     {
-        header('Location:Prototype.php');
-
         if($status === 'on')
         {
             $options = [
@@ -24,7 +23,7 @@
             $context = stream_context_create($options);
             $response = file_get_contents($pumpurl, false, $context);
             
-            echo "Response: " . $response;
+            //echo "Response: " . $response;
 
             $log = fopen("log.txt", "a");
             if (filesize('log.txt') == 0) {
@@ -48,7 +47,7 @@
             $context = stream_context_create($options);
             $response = file_get_contents($pumpurl, false, $context);
             
-            echo "Response: " . $response;
+            //echo "Response: " . $response;
 
             $log = fopen("log.txt", "a");
             if (filesize('log.txt') == 0) {
@@ -62,8 +61,11 @@
         }
         else
         {
-            echo $status;
+            //echo $status;
         }
+       
+        header('Location:Prototype.php');
+        exit;
     }
 ?>
 
@@ -86,6 +88,9 @@
 
         button {
             border-radius: 25px;
+            font-size: 24px;
+            height: 50px;
+            width: 350px;
         }
 
         .top-right {
@@ -98,9 +103,34 @@
         }
 
         .middle-right {
-            position: fixed;
-            top: 1000px;
-            right: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            top: 10%;
+            right: 5%; 
+        }
+
+        .middle-left {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            top: 10%;
+            left: 5%;
+        }
+        
+        .center {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center; 
+            position: absolute;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
         }
     </style>
     
@@ -109,16 +139,15 @@
 </head>
 
 <body>
-    <h1>Current Pump Status</h1>
 
-    <form method="post">
-        <button type="submit" name="status">
-            Toggle Pump Status
-        </button>
-    </form>
-
-    <div>
-        <iframe src="read_pumpstatus.php" width="200" height="35"></iframe>
+    <div class="middle-left">
+        <h1>Current Pump Status</h1>
+        <form method="post">
+            <button type="submit" name="status">
+                Toggle Pump Status
+            </button>
+        </form>
+        <iframe src="read_pumpstatus.php" height="255" width="350"></iframe>
     </div>
 
     <div class="top-right">
@@ -131,16 +160,17 @@
         </a>
     </div>
 
-    <h1>Recent Events</h1>
-
-    <iframe src="log.php" height="225"></iframe>
-    
-    <a href="log.txt" download>
-        <h1>Full Log</h1>
-    </a>
+    <div class="center">
+        <h1>Recent Events</h1>
+        <iframe src="log.php" height="305" width="350"></iframe>
+        <a href="log.txt" download>
+            <h1>Full Log</h1>
+        </a>
+    </div>
     
     <div class="middle-right">
-        <iframe src="https://forecast.weather.gov/MapClick.php?lat=42.1242647&lon=-75.9280673#current-conditions" height="225" width="1000"></iframe>
+        <h1>Weather</h1>
+        <iframe src="read_weather.php" height="305" width="350"></iframe>
     </div>
 </body>
 

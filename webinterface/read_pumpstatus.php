@@ -2,21 +2,26 @@
 
     echo '<meta http-equiv="refresh" content="5">';
 
-    $pumpstatus_raw = file_get_contents('http://localhost:5000/api/pump/status');
+    $pumpstatus_raw = file_get_contents('http://127.0.0.1:5000/api/pump/status');
     $pumpstatus = json_decode($pumpstatus_raw);
     $pumpstatus = $pumpstatus->status;
 
+    $backgroundcolor = '';
+
     if ($pumpstatus === 'on')
     {
-        echo 'Pump is On';
+        echo 'On';
+        $backgroundcolor = 'green';
     }
     else if ($pumpstatus === 'off')
     {
-        echo 'Pump is Off';
+        echo 'Off';
+        $backgroundcolor = 'red';
     }
     else
     {
         echo 'Error';
+        $backgroundcolor = 'grey';
     }
 
 ?>
@@ -25,8 +30,13 @@
 <head>
 <style>
     body {
+        background-color: <?php echo $backgroundcolor; ?>;
         font-family: "Arial", sans-serif;
+        font-size: 96px;
         text-align: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 </style>
 </head>

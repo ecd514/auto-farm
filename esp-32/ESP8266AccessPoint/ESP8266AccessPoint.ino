@@ -12,6 +12,8 @@ float ESP1t = 50.3;  // Example temp
 float ESP1h = 45.7;  // Example humidity
 float ESP1p = 3.1;  // Example pH
 
+
+
 // Network name and password
 const char* ssid = "ESP8266AP";
 const char* password = "laurenfrye";
@@ -31,6 +33,16 @@ void handleRoot() {
   server.send(200, "text/html", htmlContent);
 }
 
+void handleSolenoidOn() {
+  digitalWrite(LED_BUILTIN, LOW);  // Turn ON (ESP's LED is active-low)
+  server.send(200, "text/plain", "ON");
+}
+
+void handleSolenoidOff() {
+  digitalWrite(LED_BUILTIN, HIGH); // Turn OFF
+  server.send(200, "text/plain", "OFF");
+}
+
 void setup() {
   
   delay(1000);
@@ -39,11 +51,14 @@ void setup() {
   Serial.println("Configuring access point...");
 
   WiFi.softAP(ssid, password);
+  pinMode(LED_BUILTIN, OUTPUT);
 
   IPAddress myIP = WiFi.softAPIP();
   Serial.print("AP IP address: ");
   Serial.println(myIP);
   server.on("/", handleRoot);
+  server.on("/solenoid/on", handleSolenoidOn); // Turns pump on 
+  server.on("/solenoid/off", handleSolenoidOff); // Turns pump off
   server.begin();
   Serial.println("HTTP server started");
 }
