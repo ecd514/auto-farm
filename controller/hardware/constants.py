@@ -1,0 +1,2 @@
+PUMP_PIN = 17
+LIGHT_PIN = 27

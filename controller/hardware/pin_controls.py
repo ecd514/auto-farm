@@ -1,5 +1,11 @@
-import RPI.gpio as gpio
-from hardware import PUMP_PIN, LIGHT_PIN
+try:
+    import RPI.gpio as gpio
+    gpioAvailable = True
+except Exception as PiImportFail:
+    print(PiImportFail)
+    gpioAvailable = False
+
+from .constants import PUMP_PIN, LIGHT_PIN
 
 
 def gpioSetup():

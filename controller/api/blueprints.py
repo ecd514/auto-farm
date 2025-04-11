@@ -45,7 +45,7 @@ def update_status():
         if new_status == 'on':
             turnPumpOn()
         elif new_status == 'off':
-            turnLightOff()
+            turnPumpOff()
         else:
             turnLightOn()
             print("Error: unknown status")
@@ -66,7 +66,7 @@ def get_weather_forecast():
     db = get_db()
     cursor = db.cursor()
     cursor.execute(
-        "SELECT temperature, chance_of_rain, detailed_forecast FROM weather_data WHERE id = 1")
+        "SELECT temperature, chance_of_rain, detailed_forecast, icon_url, generation_time, expiration_time FROM weather_data WHERE id = 1")
     row = cursor.fetchone()
     if row and 'blank table' in row['detailed_forecast'].lower():
         try:
@@ -76,7 +76,10 @@ def get_weather_forecast():
                 SET
                     temperature = :temperature,
                     chance_of_rain = :rain,
-                    detailed_forecast = :detailed_forecast
+                    detailed_forecast = :detailed_forecast,
+                    icon_url = :icon_url,
+                    generation_time = :generated,
+                    expiration_time = :expire_time
                 WHERE
                     id = 1
             '''
@@ -89,7 +92,10 @@ def get_weather_forecast():
 
             # Fetch the updated data
             cursor.execute(
-                "SELECT temperature, chance_of_rain, detailed_forecast FROM weather_data WHERE id = 1"
+                '''
+                SELECT temperature, chance_of_rain, detailed_forecast, icon_url, expiration_time
+                FROM weather_data WHERE id = 1
+                '''
             )
             row = cursor.fetchone()
         except Exception as e:
@@ -97,4 +103,63 @@ def get_weather_forecast():
             print(e)
             # Return a blank json object and No Content http code
             return jsonify({'message': 'Warning: weather table is empty'}), 512
-    return jsonify({'temperature': row['temperature'], 'percentage_of_rain': row['chance_of_rain'], 'detailed_forecast': row['detailed_forecast']}), 200
+    return jsonify({
+        'temperature': row['temperature'],
+        'percentage_of_rain': row['chance_of_rain'],
+        'detailed_forecast': row['detailed_forecast'],
+        'icon_url': row['icon_url'],
+        'expiration_time': row['expiration_time']
+    }), 200
+
+
+@weather_bp.route('/forecast', methods=['POST'])
+def update_weather_forecast():
+    """
+    Update the weather forecast data.
+    Any POST request to this endpoint will cause the server to update.
+    """
+
+    db = get_db()
+    cursor = db.cursor()
+    try:
+        print('Attempting weather data update...')
+        update_query = '''
+            UPDATE weather_data
+            SET
+                temperature = :temperature,
+                chance_of_rain = :rain,
+                detailed_forecast = :detailed_forecast,
+                icon_url = :icon_url,
+                generation_time = :generated,
+                expiration_time = :expire_time
+            WHERE
+                id = 1
+        '''
+        temp_data = reqweather()
+
+        # Execute update
+        cursor.execute(update_query, temp_data)
+        db.commit()  # Commit using connection, not cursor
+        print('Update successful!')
+
+        # Fetch the updated data
+        cursor.execute(
+            '''
+            SELECT temperature, chance_of_rain, detailed_forecast, icon_url, expiration_time
+            FROM weather_data WHERE id = 1
+            '''
+        )
+        row = cursor.fetchone()
+    except Exception as UpdateDatabase:
+        print("Error: unable to update weather database")
+        print(UpdateDatabase)
+        # Return a blank json object and No Content http code
+        return jsonify({'message': 'Error, unable to update database'}), 512
+
+    return jsonify({
+        'temperature': row['temperature'],
+        'percentage_of_rain': row['chance_of_rain'],
+        'detailed_forecast': row['detailed_forecast'],
+        'icon_url': row['icon_url'],
+        'expiration_time': row['expiration_time']
+    }), 200

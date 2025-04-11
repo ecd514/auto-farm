@@ -41,14 +41,33 @@ def init_db(app):
                 id INTEGER PRIMARY KEY CHECK (id = 1),
                 temperature REAL NOT NULL,
                 chance_of_rain INTEGER NOT NULL CHECK(chance_of_rain BETWEEN 0 AND 100),
-                detailed_forecast TEXT NOT NULL
+                detailed_forecast TEXT NOT NULL,
+                icon_url TEXT NOT NULL,
+                generation_time TEXT NOT NULL,
+                expiration_time TEXT NOT NULL
             )
         ''')
         cursor.execute("SELECT COUNT(*) as count FROM weather_data")
         row = cursor.fetchone()
         if row['count'] == 0:
             cursor.execute(
-                "INSERT INTO weather_data (id, temperature, chance_of_rain, detailed_forecast) VALUES (1, -99, 0, 'blank table')")
+                '''INSERT INTO weather_data (
+                    id,
+                    temperature,
+                    chance_of_rain,
+                    detailed_forecast,
+                    icon_url,
+                    generation_time,
+                    expiration_time
+                ) VALUES (
+                1,
+                -99,
+                0,
+                'blank table',
+                'http://127.0.0.1:80/',
+                '0000-00-00T00:00:00+00:00',
+                '9999-12-31T23:59:59+00:00'
+                )''')
 
         db.commit()
 
