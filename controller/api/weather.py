@@ -1,22 +1,36 @@
 import requests
+from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
 
 
 class weather_forecast_data:
-    def __init__(self, temp: float = 0, pcor: int = 0, df: str = 'empty-value',
-                 i_url: str = 'empty-value', gen_time: str = 'empty-value',
-                 exp_time: str = 'empty-value'):
+    def __init__(self, temp: float = 0,
+                 pcor: int = 0,
+                 df: str = 'empty-value',
+                 i_url: str = 'empty-value',
+                 gen_time='0000-00-00T00:00:00+00:00'):
+
         self.temperature: float = temp
         self.chance_of_rain: int = int(pcor)  # Ensured input is already valid
         self.detailed_forecast: str = df
         self.icon_url = i_url
-        self.generation_time = gen_time
-        self.expiration_time = exp_time
+        print(gen_time)
+        self.generation_time = datetime.fromisoformat(
+            gen_time).astimezone(
+            ZoneInfo("America/New_York")).strftime(
+            "%Y,%m,%d,%H,%M,%S")
+        self.expiration_time = (datetime.now(
+            ZoneInfo("America/New_York"))+timedelta(hours=1)).strftime(
+            "%Y,%m,%d,%H,%M,%S")
 
     def getData(self):
         return {
             'temperature': self.temperature,
             'rain': self.chance_of_rain,
-            'detailed_forecast': self.detailed_forecast
+            'detailed_forecast': self.detailed_forecast,
+            'icon_url': self.icon_url,
+            'generated': self.generation_time,
+            'expire_time': self.expiration_time
         }
 
 

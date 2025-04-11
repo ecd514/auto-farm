@@ -1,16 +1,28 @@
-import RPi.GPIO as gpio
-from hardware import LIGHT_PIN
+try:
+    import RPI.gpio as gpio
+    gpioAvailable = True
+except Exception as PiImportFail:
+    print(PiImportFail)
+    gpioAvailable = False
+
+from .constants import LIGHT_PIN
 
 
 def turnLightOn():
-    if not gpio.input(LIGHT_PIN):
-        gpio.output(LIGHT_PIN, 1)
+    if gpioAvailable:
+        if not gpio.input(LIGHT_PIN):
+            gpio.output(LIGHT_PIN, 1)
+        else:
+            print("Light is already active")
     else:
-        print("Light is already active")
+        print("Light activated!")
 
 
 def turnLightOff():
-    if gpio.input(LIGHT_PIN):
-        gpio.output(LIGHT_PIN, 0)
+    if gpioAvailable:
+        if gpio.input(LIGHT_PIN):
+            gpio.output(LIGHT_PIN, 0)
+        else:
+            print("Light is already off")
     else:
-        print("Light is already off")
+        print("Light turned off.")

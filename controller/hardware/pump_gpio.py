@@ -1,16 +1,28 @@
-import RPI.gpio as gpio
-from hardware import PUMP_PIN
+try:
+    import RPI.gpio as gpio
+    gpioAvailable = True
+except Exception as PiImportFail:
+    print(PiImportFail)
+    gpioAvailable = False
+
+from .constants import PUMP_PIN
 
 
 def turnPumpOn():
-    if not gpio.input(PUMP_PIN):
-        gpio.output(PUMP_PIN, 1)
+    if gpioAvailable:
+        if not gpio.input(PUMP_PIN):
+            gpio.output(PUMP_PIN, 1)
+        else:
+            print("Pump is already active")
     else:
-        print("Pump is already active")
+        print("Pump has been turned on!")
 
 
 def turnPumpOff():
-    if gpio.input(PUMP_PIN):
-        gpio.output(PUMP_PIN, 0)
+    if gpioAvailable:
+        if gpio.input(PUMP_PIN):
+            gpio.output(PUMP_PIN, 0)
+        else:
+            print("Pump is already off")
     else:
-        print("Pump is already off")
+        print("Pump turned off.")
