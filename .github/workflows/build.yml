@@ -38,21 +38,46 @@ jobs:
       - name: Test Python App Runs for 10 Seconds
         run: |
           set -e
-          echo "Starting Python app..."
-          # Start the Python app in the background.
-          python app.py > python_app.log 2>&1 &
+          echo "Starting Python app test..."
+          
+          # Start Python app in background and save its PID
+          python app.py > python_test.log 2>&1 &
           PYTHON_PID=$!
           
-          echo "Waiting for 10 seconds..."
+          # Wait 10 seconds
           sleep 10
-
-          # Check if the app is still running.
-          if ps -p $PYTHON_PID > /dev/null; then
-            echo "Python app is still running after 10 seconds, sending SIGINT for graceful shutdown."
-            kill -SIGINT $PYTHON_PID
-          else
-            echo "Python app exited before 10 seconds. This indicates an error."
+          
+          # Check if process is still running (it should be)
+          if ! ps -p $PYTHON_PID > /dev/null; then
+            echo "ERROR: Python app terminated unexpectedly before 10 seconds elapsed"
+            cat python_test.log
             exit 1
+          fi
+          
+          # Send SIGINT (CTRL+C) to the process for graceful shutdown
+          echo "Sending graceful shutdown signal after 10 seconds of successful running"
+          kill -SIGINT $PYTHON_PID
+          
+          # Wait up to 5 seconds for graceful shutdown
+          for i in {1..5}; do
+            if ! ps -p $PYTHON_PID > /dev/null; then
+              echo "Python app shut down gracefully"
+              break
+            fi
+            sleep 1
+            if [ $i -eq 5 ]; then
+              echo "WARNING: Python app did not shut down within 5 seconds, forcing termination"
+              kill -9 $PYTHON_PID
+            fi
+          done
+          
+          # Check the exit status from the log
+          if grep -q "ERROR\|Exception\|Traceback" python_test.log; then
+            echo "ERROR: Python app encountered an error during execution:"
+            cat python_test.log
+            exit 1
+          else
+            echo "Python app ran for 10 seconds without errors and shut down gracefully."
           fi
 
           # Wait for the app to shutdown and capture its exit status.
