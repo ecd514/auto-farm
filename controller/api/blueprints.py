@@ -4,6 +4,10 @@ from .db import get_db
 from .weather import reqweather, weather_forecast_data
 from hardware import turnPumpOn, turnPumpOff, turnLightOn, turnLightOff
 
+
+"""
+API url route blueprints
+"""
 pump_bp = Blueprint('pump', __name__, url_prefix='/api/pump')
 weather_bp = Blueprint('weather', __name__, url_prefix='/api/weather')
 
