@@ -1,0 +1,9 @@
+global:
+  scrape_interval: 5s
+
+scrape_configs:
+  - job_name: 'mock_metrics'
+    scrape_interval: 5s
+    static_configs:
+      #- targets: ['host.podman.internal:8000']  # For Docker
+      - targets: ['host.containers.internal:8000']        # For native install
