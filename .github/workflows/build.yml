@@ -38,11 +38,31 @@ jobs:
       - name: Test Python App Runs for 10 Seconds
         run: |
           set -e
-          echo "Starting Python app test..."
-          # The timeout command will run the app for 10 seconds and then kill it.
-          timeout -s SIGINT 10s python controller/controller.py
-          echo "Python app ran for 10 seconds without errors."
+          echo "Starting Python app..."
+          # Start the Python app in the background.
+          python app.py > python_app.log 2>&1 &
+          PYTHON_PID=$!
+          
+          echo "Waiting for 10 seconds..."
+          sleep 10
 
+          # Check if the app is still running.
+          if ps -p $PYTHON_PID > /dev/null; then
+            echo "Python app is still running after 10 seconds, sending SIGINT for graceful shutdown."
+            kill -SIGINT $PYTHON_PID
+          else
+            echo "Python app exited before 10 seconds. This indicates an error."
+            exit 1
+          fi
+
+          # Wait for the app to shutdown and capture its exit status.
+          wait $PYTHON_PID
+          EXIT_CODE=$?
+          if [ $EXIT_CODE -ne 0 ]; then
+            echo "Python app terminated with exit code $EXIT_CODE"
+            exit 1
+          fi
+          echo "Python app ran for 10 seconds and shut down gracefully."
       # --- Test 2: PHP project can start ---
       - name: Test PHP Project Start
         run: |
