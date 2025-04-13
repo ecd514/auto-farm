@@ -41,7 +41,7 @@ jobs:
           echo "Starting Python app test..."
           
           # Start the Python app in the background and save its PID
-          python app.py > logs/python_startup.log 2>&1 &
+          python controller/controller.py > python_startup.log 2>&1 &
           PYTHON_PID=$!
           
           # Wait for 10 seconds
@@ -68,8 +68,7 @@ jobs:
             fi
           else
             echo "Python app crashed or exited within 10 seconds."
-            echo "--- Last 50 lines of Python startup log ---"
-            tail -n 50 logs/python_startup.log
+            cat python_startup.log
             exit 1
           fi
 
