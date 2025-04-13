@@ -34,7 +34,7 @@ jobs:
           set -e
           echo "Starting Python app test..."
           # The timeout command will run the app for 10 seconds and then kill it.
-          timeout 10s python app.py
+          timeout 10s python controller/controller.py
           echo "Python app ran for 10 seconds without errors."
 
       # --- Test 2: PHP project can start ---
@@ -43,7 +43,9 @@ jobs:
           set -e
           echo "Starting PHP built-in server..."
           # Change "php_project/" to your project's web root if needed.
-          php -S localhost:8000 -t php_project/ > php_server.log 2>&1 &
+          #php -S localhost:8000 -t php_project/ > php_server.log 2>&1 &
+          php -S localhost:8000 -t webinterface/ > php_server.log 2>&1 &
+          
           PHP_PID=$!
           # Allow some time for the server to initialize.
           sleep 5
@@ -63,11 +65,12 @@ jobs:
 
           # Start Python app in background.
           # (Ensure your Python app listens on port 5000 or modify as needed.)
-          python app.py > python_server.log 2>&1 &
+          python controller/controller.py > python_server.log 2>&1 &
           PYTHON_PID=$!
 
           # Start PHP server in background.
-          php -S localhost:8000 -t php_project/ > php_server.log 2>&1 &
+          php -S localhost:8000 -t webinterface/ > php_server.log 2>&1 &
+
           PHP_PID=$!
 
           # Allow servers time to start.
