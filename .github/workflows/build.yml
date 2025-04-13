@@ -40,7 +40,7 @@ jobs:
           set -e
           echo "Starting Python app test..."
           # The timeout command will run the app for 10 seconds and then kill it.
-          timeout 10s python controller/controller.py
+          timeout -s SIGINT 10s python controller/controller.py
           echo "Python app ran for 10 seconds without errors."
 
       # --- Test 2: PHP project can start ---
