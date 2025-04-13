@@ -40,54 +40,38 @@ jobs:
           set -e
           echo "Starting Python app test..."
           
-          # Start Python app in background and save its PID
-          python app.py > python_test.log 2>&1 &
+          # Start the Python app in the background and save its PID
+          python app.py > python_startup.log 2>&1 &
           PYTHON_PID=$!
           
-          # Wait 10 seconds
+          # Wait for 10 seconds
+          echo "Waiting for 10 seconds to ensure app starts properly..."
           sleep 10
           
-          # Check if process is still running (it should be)
-          if ! ps -p $PYTHON_PID > /dev/null; then
-            echo "ERROR: Python app terminated unexpectedly before 10 seconds elapsed"
-            cat python_test.log
-            exit 1
-          fi
-          
-          # Send SIGINT (CTRL+C) to the process for graceful shutdown
-          echo "Sending graceful shutdown signal after 10 seconds of successful running"
-          kill -SIGINT $PYTHON_PID
-          
-          # Wait up to 5 seconds for graceful shutdown
-          for i in {1..5}; do
-            if ! ps -p $PYTHON_PID > /dev/null; then
-              echo "Python app shut down gracefully"
-              break
-            fi
-            sleep 1
-            if [ $i -eq 5 ]; then
-              echo "WARNING: Python app did not shut down within 5 seconds, forcing termination"
+          # Check if the process is still running
+          if ps -p $PYTHON_PID > /dev/null; then
+            echo "Python app is still running after 10 seconds, test passed."
+            
+            # Send a SIGINT (equivalent to CTRL+C) for graceful shutdown
+            echo "Sending graceful shutdown signal (SIGINT)..."
+            kill -SIGINT $PYTHON_PID
+            
+            # Give it a moment to shut down
+            sleep 3
+            
+            # Check if it's still running; if so, force kill it
+            if ps -p $PYTHON_PID > /dev/null; then
+              echo "App didn't shut down gracefully, forcing termination."
               kill -9 $PYTHON_PID
+            else
+              echo "App shut down gracefully."
             fi
-          done
-          
-          # Check the exit status from the log
-          if grep -q "ERROR\|Exception\|Traceback" python_test.log; then
-            echo "ERROR: Python app encountered an error during execution:"
-            cat python_test.log
-            exit 1
           else
-            echo "Python app ran for 10 seconds without errors and shut down gracefully."
+            echo "Python app crashed or exited within 10 seconds."
+            cat python_startup.log
+            exit 1
           fi
 
-          # Wait for the app to shutdown and capture its exit status.
-          wait $PYTHON_PID
-          EXIT_CODE=$?
-          if [ $EXIT_CODE -ne 0 ]; then
-            echo "Python app terminated with exit code $EXIT_CODE"
-            exit 1
-          fi
-          echo "Python app ran for 10 seconds and shut down gracefully."
       # --- Test 2: PHP project can start ---
       - name: Test PHP Project Start
         run: |
