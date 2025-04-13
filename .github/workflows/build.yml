@@ -1,0 +1,105 @@
+name: Integration Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      # --- Setup Python ---
+      - name: Set Up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      # --- Setup PHP ---
+      - name: Set Up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.0'
+
+      # --- Test 1: Python app runs for 10 seconds ---
+      - name: Test Python App Runs for 10 Seconds
+        run: |
+          set -e
+          echo "Starting Python app test..."
+          # The timeout command will run the app for 10 seconds and then kill it.
+          timeout 10s python app.py
+          echo "Python app ran for 10 seconds without errors."
+
+      # --- Test 2: PHP project can start ---
+      - name: Test PHP Project Start
+        run: |
+          set -e
+          echo "Starting PHP built-in server..."
+          # Change "php_project/" to your project's web root if needed.
+          php -S localhost:8000 -t php_project/ > php_server.log 2>&1 &
+          PHP_PID=$!
+          # Allow some time for the server to initialize.
+          sleep 5
+          if ps -p $PHP_PID > /dev/null; then
+            echo "PHP server is running."
+            kill $PHP_PID
+          else
+            echo "PHP server failed to start."
+            exit 1
+          fi
+
+      # --- Test 3: Combined startup and API endpoint tests ---
+      - name: Test Combined App Startup and API Endpoints
+        run: |
+          set -e
+          echo "Starting both Python and PHP servers..."
+
+          # Start Python app in background.
+          # (Ensure your Python app listens on port 5000 or modify as needed.)
+          python app.py > python_server.log 2>&1 &
+          PYTHON_PID=$!
+
+          # Start PHP server in background.
+          php -S localhost:8000 -t php_project/ > php_server.log 2>&1 &
+          PHP_PID=$!
+
+          # Allow servers time to start.
+          sleep 5
+
+          # Define the base URL for the API endpoints.
+          # (Adjust the URL/port if your API is served elsewhere.)
+          API_BASE_URL="http://127.0.0.1:5000"
+
+          echo "Testing GET /api/pump/status"
+          STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" "${API_BASE_URL}/api/pump/status")
+          if [ "$STATUS_CODE" -ne 200 ]; then
+            echo "GET /api/pump/status failed with status code $STATUS_CODE"
+            kill $PYTHON_PID
+            kill $PHP_PID
+            exit 1
+          else
+            echo "GET /api/pump/status returned status code 200"
+          fi
+
+          echo "Testing GET /api/weather/forecast"
+          STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" "${API_BASE_URL}/api/weather/forecast")
+          if [ "$STATUS_CODE" -ne 200 ]; then
+            echo "GET /api/weather/forecast failed with status code $STATUS_CODE"
+            kill $PYTHON_PID
+            kill $PHP_PID
+            exit 1
+          else
+            echo "GET /api/weather/forecast returned status code 200"
+          fi
+
+          # Kill the background processes.
+          echo "Shutting down servers..."
+          kill $PYTHON_PID
+          kill $PHP_PID
+          echo "Combined app test completed successfully."
