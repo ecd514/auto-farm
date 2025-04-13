@@ -19,10 +19,6 @@ jobs:
           - "9090:9090"
         volumes:
           - ./prometheus/:/etc/prometheus
-        options: >-
-          --config.file=/etc/prometheus/prometheus.yml
-          --storage.tsdb.path=/prometheus-data
-          --storage.tsdb.retention.time=2h
 
     steps:
       - name: Checkout Repository
