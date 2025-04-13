@@ -20,7 +20,13 @@ jobs:
       - name: Set Up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.x'
+          python-version: '3.12'
+
+      # --- Install Python Dependencies ---
+      - name: Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
       # --- Setup PHP ---
       - name: Set Up PHP
