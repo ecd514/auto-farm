@@ -111,18 +111,16 @@ jobs:
 
           # Define the base URL for the API endpoints.
           API_BASE_URL="http://127.0.0.1:5000"
-          
+
           #########################################
           # Test GET /api/pump/status endpoint
           #########################################
           echo "Testing GET /api/pump/status"
-          # Capture both the response body and HTTP status code.
           RESPONSE=$(curl -s -w "\n%{http_code}" "${API_BASE_URL}/api/pump/status")
-          # Extract the HTTP status code (last line) and the body.
           HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
           BODY=$(echo "$RESPONSE" | sed '$d')
           
-          echo "Response Body for /api/pump/status:"
+          echo "Response Body for GET /api/pump/status:"
           echo "$BODY"
           echo "HTTP status code: $HTTP_CODE"
           
@@ -143,7 +141,7 @@ jobs:
           HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
           BODY=$(echo "$RESPONSE" | sed '$d')
           
-          echo "Response Body for /api/weather/forecast:"
+          echo "Response Body for GET /api/weather/forecast:"
           echo "$BODY"
           echo "HTTP status code: $HTTP_CODE"
           
@@ -156,17 +154,60 @@ jobs:
             echo "GET /api/weather/forecast returned status code 200"
           fi
 
+          #########################################
+          # Test POST /api/pump/status endpoint
+          #########################################
+          echo "Testing POST /api/pump/status with payload {\"status\": \"on\"}"
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST -H "Content-Type: application/json" \
+            -d '{"status": "on"}' "${API_BASE_URL}/api/pump/status")
+          HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+          BODY=$(echo "$RESPONSE" | sed '$d')
+          
+          echo "Response Body for POST /api/pump/status:"
+          echo "$BODY"
+          echo "HTTP status code: $HTTP_CODE"
+          
+          if [ "$HTTP_CODE" -ne 200 ]; then
+            echo "POST /api/pump/status failed with status code $HTTP_CODE"
+            kill -SIGINT $PYTHON_PID
+            kill $PHP_PID
+            exit 1
+          else
+            echo "POST /api/pump/status returned status code 200"
+          fi
+
+          #########################################
+          # Test POST /api/weather/forecast endpoint
+          #########################################
+          echo "Testing POST /api/weather/forecast with no payload"
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "${API_BASE_URL}/api/weather/forecast")
+          HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+          BODY=$(echo "$RESPONSE" | sed '$d')
+          
+          echo "Response Body for POST /api/weather/forecast:"
+          echo "$BODY"
+          echo "HTTP status code: $HTTP_CODE"
+          
+          if [ "$HTTP_CODE" -ne 200 ]; then
+            echo "POST /api/weather/forecast failed with status code $HTTP_CODE"
+            kill -SIGINT $PYTHON_PID
+            kill $PHP_PID
+            exit 1
+          else
+            echo "POST /api/weather/forecast returned status code 200"
+          fi
+
           # Gracefully shut down the Python app with SIGINT
           echo "Shutting down servers..."
           kill -SIGINT $PYTHON_PID
           kill $PHP_PID
-
+          
           # Give the Python app time to shut down gracefully.
           sleep 3
-
+          
           # Force kill if still running.
           if ps -p $PYTHON_PID > /dev/null; then
             kill -9 $PYTHON_PID
           fi
-
+          
           echo "Combined app test completed successfully."
