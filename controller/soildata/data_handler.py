@@ -1,7 +1,6 @@
 import requests
 import time
 from datetime import datetime
-import pandas as pd
 
 
 def get_prometheus_data(query, prometheus_url):
