@@ -1,3 +1,4 @@
 import weather
 
-weather.reqweather()
+weather_data = weather.reqweather()
+print(type(weather_data))
