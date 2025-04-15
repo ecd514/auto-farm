@@ -52,20 +52,20 @@ def get_active_sensors(prometheus_url):
     return sensors
 
 
-def get_sensor_average(sensor, prometheus_url, minutes=2):
+def get_sensor_average(sensor, prometheus_url, average_period: str = r'2m'):
     """
     Get average moisture percentage for a specific sensor over the past X minutes.
 
     Args:
         sensor (str): Name of the sensor
         prometheus_url (str): URL of Prometheus server
-        minutes (int): Time range in minutes
+        average_period (str): Time range formatted as "'integer''{h,m,s}'" ex: 2m, 1h, 30s
 
     Returns:
         float: Average moisture percentage
     """
     query = f'avg_over_time(soil_data_moisture_perc{{sensor="{
-        sensor}"}}[{minutes}m])'
+        sensor}"}}[{average_period}])'
     result = get_prometheus_data(query, prometheus_url)
 
     if result["status"] == "success" and result["data"]["resultType"] == "vector":
