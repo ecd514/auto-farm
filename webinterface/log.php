@@ -1,5 +1,5 @@
 <?php
-    
+    // refresh page every five seconds
     echo '<meta http-equiv="refresh" content="5">';
 
     // import log text file

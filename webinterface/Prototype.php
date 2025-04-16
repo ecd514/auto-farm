@@ -2,16 +2,20 @@
     ob_start();
     date_default_timezone_set("America/New_York");
 
+    // input pump status and decode it into a variable
     $pumpurl = "http://127.0.0.1:5000/api/pump/status";
 
     $status_raw = file_get_contents($pumpurl);
     $status = json_decode($status_raw);
     $status = $status->status;
 
+    // if the button is pressed
     if(isset($_POST['status']))
     {
+        // if the pump is on
         if($status === 'on')
         {
+            // encodes a value of off to the api
             $options = [
                 "http" => [
                     "header" => "Content-Type: application/json\r\n" . "Accept: application/json\r\n",
@@ -23,8 +27,7 @@
             $context = stream_context_create($options);
             $response = file_get_contents($pumpurl, false, $context);
             
-            //echo "Response: " . $response;
-
+            // writes to the log the date and time, and that the pump is off
             $log = fopen("log.txt", "a");
             if (filesize('log.txt') == 0) {
                 fwrite($log, date("m/d/Y,h:ia,") . "Pump Off,");
@@ -34,8 +37,10 @@
             }
             fclose($log);
         }
+        // if the pump is off
         elseif($status === 'off')
         {            
+            // encodes a value of on to the api
             $options = [
                 "http" => [
                     "header" => "Content-Type: application/json\r\n" . "Accept: application/json\r\n",
@@ -47,8 +52,7 @@
             $context = stream_context_create($options);
             $response = file_get_contents($pumpurl, false, $context);
             
-            //echo "Response: " . $response;
-
+            // writes to the log the date and time, and that the pump is on
             $log = fopen("log.txt", "a");
             if (filesize('log.txt') == 0) {
                 fwrite($log, date("m/d/Y,h:ia,") . "Pump On,");
@@ -61,9 +65,13 @@
         }
         else
         {
-            //echo $status;
+            // if button is pressed but the pump status variable is wrong
+            // i.e. not on or off
+            // nothing happens
         }
        
+        // redirects to same page to clear form submission from button
+        // prevents erroneous switching of pump status value
         header('Location:Prototype.php');
         exit;
     }
