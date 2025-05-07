@@ -1,4 +1,4 @@
-from threading import Thread, Event, activeCount, local
+from threading import Thread, Event
 from queue import Queue
 import time
 from datetime import datetime, timedelta, timezone
@@ -6,9 +6,34 @@ from types import NoneType
 from zoneinfo import ZoneInfo
 import requests
 
-from api import is_database_initialized, reqweather, start_api
-from hardware import turnPumpOn, turnLightOn, turnPumpOff, turnLightOff
-from soildata import get_prometheus_data, get_active_sensors, get_sensor_average
+try:
+    from api import (
+        is_database_initialized,
+        reqweather,
+        start_api
+    )
+except ModuleNotFoundError as import_error:
+    print(f"Error: Unable to import API module. Please check path or verify file integrity. Exception message: \n{
+          import_error}")
+try:
+    from hardware import (
+        turnPumpOn,
+        turnLightOn,
+        turnPumpOff,
+        turnLightOff
+    )
+except ModuleNotFoundError as import_error:
+    print(f"Error: Unable to import hardware module. Please check path or verify file integrity. Exception message: \n{
+          import_error}")
+try:
+    from soildata import (
+        get_prometheus_data,
+        get_active_sensors,
+        get_sensor_average
+    )
+except ModuleNotFoundError as import_error:
+    print(f"Error: Unable to import soildata module. Please check path or verify file integrity. Exception message: \n{
+          import_error}")
 
 HOST_NAME = r'localhost'
 HOST_PORT = 5000
@@ -30,7 +55,8 @@ api_app = start_api()
 
 class data_object:
     """
-
+    A wrapper class to help verify that the data used 
+    is the latest.
     """
 
     def __init__(self, data):
@@ -107,7 +133,8 @@ def runRetrieveDatabase(data_queue: Queue, stop_event: Event):
 
 def runRetrieveSensor(prometheus_url: str, data_queue: Queue, stop_event: Event):
     """
-
+    A function that spins up a thread to run in
+    the background and query the prometheus database.
     """
     while not stop_event.is_set():
         start_time = time.time()
@@ -119,9 +146,6 @@ def runRetrieveSensor(prometheus_url: str, data_queue: Queue, stop_event: Event)
             if not sensors:
                 print("No active sensors found.")
                 return
-
-            # print(f"Found {len(sensors)} active sensors.")
-            # print("")
 
             # Create a dictionary for the results
             results = {}
@@ -135,6 +159,7 @@ def runRetrieveSensor(prometheus_url: str, data_queue: Queue, stop_event: Event)
                         "averages": {
                             "moisture": avg_moisture
                         }
+
                     }
             data_queue.put(results) if not data_queue.full() else None
 
@@ -152,8 +177,9 @@ def runFlask(host_name, port, debug_mode, reloader):
                 debug=debug_mode, use_reloader=reloader)
 
 
-if __name__ == "__main__":
-    # Initialize and check database
+def main():
+    # Initialize and check database.
+    # NOTE: This will not leave the loop unless the database is accessible
     for table_being_verified in database_tables:
         while not is_database_initialized(table_being_verified):
             print("Required table {} not found".format(
@@ -188,6 +214,7 @@ if __name__ == "__main__":
         args=(PROMETHEUS_URL, sensor_queue, thread_shutdown))
     sensor_retrieval_thread.start()
 
+    # Wait for threads to initialize
     time.sleep(1)
 
     try:
@@ -195,10 +222,10 @@ if __name__ == "__main__":
         while True:
             start_time = time.time()
             # Check if the flask thread is running and restart it if stopped.
-            # if not flask_thread.is_alive():
-            #    flask_thread = Thread(target=runFlask, daemon=True, args=(
-            #        HOST_NAME, HOST_PORT, DEBUG_MODE, FLASK_RELOADER))
-            #    flask_thread.start()
+            if not flask_thread.is_alive():
+                flask_thread = Thread(target=runFlask, daemon=True, args=(
+                    HOST_NAME, HOST_PORT, DEBUG_MODE, FLASK_RELOADER))
+                flask_thread.start()
 
             if not database_retrieval_thread.is_alive():
                 database_retrieval_thread = Thread(
@@ -209,6 +236,7 @@ if __name__ == "__main__":
             if not weather_queue.empty() and not weather_data.isDataValid():
                 weather_data.update(weather_queue.get())
                 print(weather_data.data['percentage_of_rain'])
+
             if not sensor_queue.empty() and not sensor_data.isDataValid():
                 sensor_data.update(sensor_queue.get())
                 print(sensor_data.data['0']['averages']['moisture'])
@@ -234,3 +262,8 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print("Shutting down servers...")
         thread_shutdown.set()
+
+
+# Run the main function
+if __name__ == "__main__":
+    main()
